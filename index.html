@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Steal an Egg — Speed Calculator</title>
+<style>
+:root{--bg:#0b1020;--panel:#141c31;--panel2:#1c2842;--text:#eef4ff;--muted:#a6b5d1;--cyan:#62e6ff;--purple:#a78bfa;--green:#8cf5b4}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#1c2a50 0,#0b1020 55%);color:var(--text);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;min-height:100vh}
+.wrap{width:min(960px,92%);margin:0 auto;padding:32px 0 48px}.hero{text-align:center;margin-bottom:26px}.egg{font-size:42px;filter:drop-shadow(0 0 15px #62e6ff66)}h1{margin:8px 0;font-size:clamp(28px,5vw,44px);letter-spacing:-1px}.grad{background:linear-gradient(90deg,var(--cyan),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent}.sub{color:var(--muted);margin:0 auto;max-width:620px;line-height:1.6}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{background:linear-gradient(145deg,#17213aee,#11182bee);border:1px solid #ffffff17;border-radius:18px;padding:22px;box-shadow:0 14px 40px #0002}.card h2{font-size:18px;margin:0 0 7px}.desc{font-size:13px;color:var(--muted);line-height:1.5;margin:0 0 18px}
+label{display:block;font-size:13px;color:#c6d4ed;margin:13px 0 7px}input,select{width:100%;border:1px solid #ffffff20;border-radius:10px;padding:12px 13px;background:#0b1224;color:var(--text);font:inherit;outline:none}input:focus,select:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #62e6ff18}
+button{width:100%;margin-top:16px;border:0;border-radius:10px;padding:12px 15px;background:linear-gradient(90deg,#62e6ff,#a78bfa);color:#071020;font-weight:800;font-size:15px;cursor:pointer}button:hover{filter:brightness(1.08)}
+.result{margin-top:14px;padding:14px;border-radius:12px;background:#0a1224;border:1px solid #62e6ff35;min-height:72px}.result .small{font-size:12px;color:var(--muted)}.result .value{font-size:25px;font-weight:850;color:var(--green);margin-top:4px}.result .note{font-size:13px;color:#c6d4ed;margin-top:5px;line-height:1.5}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:22px;line-height:1.6}.wide{grid-column:1/-1}.reset{background:transparent;color:var(--muted);border:1px solid #ffffff25;margin-top:8px}
+@media(max-width:680px){.grid{grid-template-columns:1fr}.wrap{padding-top:22px}.card{padding:18px}.wide{grid-column:auto}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+  <div class="egg">🥚 ⚡ 🥚</div>
+  <h1><span class="grad">STEAL AN EGG</span><br>Speed Calculator</h1>
+  <p class="sub">Kalkulator buatan penggemar untuk menghitung pace, estimasi waktu, dan hasil telur. Masukkan data permainanmu secara manual.</p>
+</header>
+<section class="grid">
+  <article class="card">
+    <h2>⚡ Kecepatan / Pace</h2>
+    <p class="desc">Hitung rata-rata kecepatan berdasarkan jarak dan waktu yang kamu catat.</p>
+    <label for="distance">Jarak yang ditempuh</label><input id="distance" type="number" min="0" step="any" placeholder="Contoh: 100">
+    <label for="distUnit">Satuan jarak</label><select id="distUnit"><option value="unit">unit (bebas)</option><option value="m">meter</option><option value="stud">stud Roblox (perkiraan)</option></select>
+    <label for="time">Waktu (detik)</label><input id="time" type="number" min="0" step="any" placeholder="Contoh: 12.5">
+    <button onclick="calcSpeed()">Hitung kecepatan</button>
+    <div class="result" id="speedResult" aria-live="polite"><div class="small">Hasil kecepatan</div><div class="note">Masukkan jarak dan waktu, lalu tekan tombol.</div></div>
+  </article>
+  <article class="card">
+    <h2>⏱️ Estimasi Target</h2>
+    <p class="desc">Perkirakan waktu untuk menyelesaikan sejumlah putaran, perjalanan, atau target yang sama.</p>
+    <label for="oneTime">Waktu untuk 1 kali (detik)</label><input id="oneTime" type="number" min="0" step="any" placeholder="Contoh: 18">
+    <label for="target">Jumlah target</label><input id="target" type="number" min="0" step="1" placeholder="Contoh: 25">
+    <label for="done">Target yang sudah selesai (opsional)</label><input id="done" type="number" min="0" step="1" value="0">
+    <button onclick="calcETA()">Hitung estimasi waktu</button>
+    <div class="result" id="etaResult" aria-live="polite"><div class="small">Estimasi waktu</div><div class="note">Masukkan waktu per target dan jumlah target.</div></div>
+  </article>
+  <article class="card">
+    <h2>🥚 Telur per Menit</h2>
+    <p class="desc">Hitung rata-rata hasil dari sesi permainan yang sudah kamu jalani.</p>
+    <label for="eggs">Jumlah telur didapat</label><input id="eggs" type="number" min="0" step="1" placeholder="Contoh: 40">
+    <label for="minutes">Durasi sesi (menit)</label><input id="minutes" type="number" min="0" step="any" placeholder="Contoh: 8">
+    <button onclick="calcEggs()">Hitung hasil per menit</button>
+    <div class="result" id="eggResult" aria-live="polite"><div class="small">Rata-rata telur</div><div class="note">Masukkan jumlah telur dan durasi sesi.</div></div>
+  </article>
+  <article class="card">
+    <h2>🎯 Bandingkan Dua Percobaan</h2>
+    <p class="desc">Bandingkan waktu percobaan lama dan baru. Waktu lebih rendah berarti lebih cepat.</p>
+    <label for="oldTime">Waktu percobaan lama (detik)</label><input id="oldTime" type="number" min="0" step="any" placeholder="Contoh: 30">
+    <label for="newTime">Waktu percobaan baru (detik)</label><input id="newTime" type="number" min="0" step="any" placeholder="Contoh: 25">
+    <button onclick="compareTimes()">Bandingkan</button>
+    <div class="result" id="compareResult" aria-live="polite"><div class="small">Perbandingan</div><div class="note">Masukkan dua waktu untuk melihat perubahan.</div></div>
+  </article>
+  <div class="wide"><button class="reset" onclick="resetAll()">Bersihkan semua angka</button></div>
+</section>
+<p class="footer">Fan-made calculator • Tidak terafiliasi dengan Roblox atau pembuat Steal an Egg.<br>Hasil berdasarkan angka yang kamu masukkan; aplikasi ini tidak membaca data game secara otomatis.</p>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const num = id => Number($(id).value);
+const valid = (...values) => values.every(v => Number.isFinite(v) && v >= 0);
+function show(id, title, value, note='') {
+  $(id).innerHTML = `<div class="small">${title}</div><div class="value">${value}</div>${note ? `<div class="note">${note}</div>` : ''}`;
+}
+function fmt(n, digits=2){return n.toLocaleString('id-ID',{maximumFractionDigits:digits});}
+function calcSpeed(){
+ const d=num('distance'),t=num('time'),unit=$('distUnit').value;
+ if(!valid(d,t)||d<=0||t<=0){show('speedResult','Periksa input','—','Jarak dan waktu harus lebih dari 0.');return;}
+ const s=d/t, perSec=unit==='unit'?'unit/detik':unit+'/detik';
+ show('speedResult','Kecepatan rata-rata',fmt(s)+' '+perSec,'Waktu per unit: '+fmt(t/d)+' detik.');
+}
+function calcETA(){
+ const t=num('oneTime'),target=num('target'),done=num('done');
+ if(!valid(t,target,done)||t<=0||target<=0||done>target){show('etaResult','Periksa input','—','Waktu harus lebih dari 0, target harus positif, dan progres tidak boleh melebihi target.');return;}
+ const left=target-done,secs=t*left,total=t*target;
+ show('etaResult','Sisa perkiraan waktu',fmt(secs/60)+' menit',`${left} target tersisa. Total waktu untuk ${target} target: ${fmt(total/60)} menit.`);
+}
+function calcEggs(){
+ const e=num('eggs'),m=num('minutes');
+ if(!valid(e,m)||m<=0){show('eggResult','Periksa input','—','Jumlah telur tidak boleh negatif dan durasi harus lebih dari 0.');return;}
+ show('eggResult','Rata-rata hasil',fmt(e/m)+' telur/menit','Perkiraan dalam 60 menit: '+fmt(e/m*60)+' telur jika kecepatannya tetap.');
+}
+function compareTimes(){
+ const a=num('oldTime'),b=num('newTime');
+ if(!valid(a,b)||a<=0||b<=0){show('compareResult','Periksa input','—','Kedua waktu harus lebih dari 0.');return;}
+ const pct=(a-b)/a*100,diff=Math.abs(a-b);
+ if(Math.abs(pct)<0.005)show('compareResult','Hasil perbandingan','Sama','Kedua percobaan memiliki waktu yang sama.');
+ else if(pct>0)show('compareResult','Perubahan waktu',fmt(pct)+'% lebih cepat','Menghemat '+fmt(diff)+' detik dibanding percobaan lama.');
+ else show('compareResult','Perubahan waktu',fmt(Math.abs(pct))+'% lebih lambat','Memerlukan '+fmt(diff)+' detik lebih lama dibanding percobaan lama.');
+}
+function resetAll(){
+ document.querySelectorAll('input').forEach(i=>i.value=i.id==='done'?'0':'');
+ $('distUnit').value='unit';
+ show('speedResult','Hasil kecepatan','Masukkan jarak dan waktu.');
+ show('etaResult','Estimasi waktu','Masukkan waktu per target dan jumlah target.');
+ show('eggResult','Rata-rata telur','Masukkan jumlah telur dan durasi sesi.');
+ show('compareResult','Perbandingan','Masukkan dua waktu untuk melihat perubahan.');
+}
+</script>
+</body>
+</html>
